@@ -9,8 +9,8 @@ from src.page import Page
 
 
 class LoginPage(Page):
-    search = Element("百度一下", "#kw")
-    search_btn = Element("搜索", "#su")
+    search = Element("input", "#kw")
+    search_btn = Element("search", "#su")
 
     def login(self):
         self.driver.get("https://www.baidu.com/")
@@ -21,6 +21,6 @@ class LoginPage(Page):
 def test_login():
     browser = webdriver.Chrome("chromedriver.exe")
     LoginPage(browser).login()
-    assert browser.title == "百度一下，你就知道"
+    assert browser.title == "expect value"
 
 ```
