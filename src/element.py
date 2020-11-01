@@ -92,13 +92,15 @@ class Element:
     def set_value(self, value):
         with allure.step(f"Set {self.describe} value = {value}"):
             self.driver.execute_script(
-                f"arguments[0].setAttribute('value','{value}');", self.visible)
+                f"arguments[0].setAttribute('value','{value}');",
+                self.visible)
         return self
 
     def set_attr(self, name, value):
         with allure.step(f"Set {self.describe} attribute: {name} = {value}"):
             self.driver.execute_script(
-                f"arguments[0].setAttribute('{name}','{value}')", self.present)
+                f"arguments[0].setAttribute('{name}','{value}')",
+                self.present)
         return self
 
     def input(self, value):
