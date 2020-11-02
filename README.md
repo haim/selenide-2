@@ -4,8 +4,8 @@
 ```python
 from selenium import webdriver
 
-from src.element import Element
-from src.page import Page
+from selenide.element import Element
+from selenide.page import Page
 
 
 class LoginPage(Page):

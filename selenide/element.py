@@ -4,21 +4,24 @@ import time
 from typing import Optional, Union
 
 import allure
-from selenium.common.exceptions import (InvalidElementStateException,
-                                        WebDriverException)
+from selenium.common.exceptions import (
+    InvalidElementStateException,
+    WebDriverException,
+)
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
-from src.configuration import Config
-from src.helper import element_mark, to_by
+from selenide.configuration import Config
+from selenide.helper import element_mark, to_by
 
 
 class Element:
     def __init__(self, describe: Optional[str], locator: Union[str, tuple]):
         self.describe = describe
         self.locator = to_by(locator)
+        self.action = ActionChains(self.driver)
 
     def __get__(self, instance, owner):
         if not instance:
@@ -33,43 +36,36 @@ class Element:
         except WebDriverException:
             raise PermissionError("Element should be support input.")
 
-    def conditions(self, condition):
-        with element_mark(self.driver, element := WebDriverWait(
-                self.driver, Config.timeout).until(condition)):
+    def locate(self, condition):
+        element = WebDriverWait(self.driver, Config.timeout).until(condition)
+        with element_mark(self.driver, element):
             time.sleep(0.5)
         return element
 
     @property
     def present(self):
-        return self.conditions(ec.presence_of_element_located(self.locator))
+        return self.locate(ec.presence_of_element_located(self.locator))
 
     @property
     def staleness(self):
-        return self.conditions(ec.staleness_of(self.locator))
+        return self.locate(ec.staleness_of(self.locator))
 
     @property
     def visible(self):
-        return self.conditions(
-            ec.visibility_of_element_located(self.locator))
+        return self.locate(ec.visibility_of_element_located(self.locator))
 
     @property
     def invisible(self):
-        return self.conditions(
-            ec.invisibility_of_element_located(self.locator))
+        return self.locate(ec.invisibility_of_element_located(self.locator))
 
     @property
     def clickable(self):
-        return self.conditions(ec.element_to_be_clickable(self.locator))
+        return self.locate(ec.element_to_be_clickable(self.locator))
 
     def has_text(self, text):
         with allure.step(f"Assert {self.describe} has text = {text}"):
-            return self.conditions(
-                ec.text_to_be_present_in_element(self.locator, text))
-
-    def has_value(self, value):
-        with allure.step(f"Assert {self.describe} has value = {value}"):
-            return self.conditions(
-                ec.text_to_be_present_in_element_value(self.locator, value))
+            present = ec.text_to_be_present_in_element
+            return self.locate(present(self.locator, text))
 
     def has_attr(self, name, value):
         with allure.step(f"Assert {self.describe} has {name} = {value}"):
@@ -91,16 +87,14 @@ class Element:
 
     def set_value(self, value):
         with allure.step(f"Set {self.describe} value = {value}"):
-            self.driver.execute_script(
-                f"arguments[0].setAttribute('value','{value}');",
-                self.visible)
+            set_value_js = f"arguments[0].setAttribute('value','{value}')"
+            self.driver.execute_script(set_value_js, self.visible)
         return self
 
     def set_attr(self, name, value):
         with allure.step(f"Set {self.describe} attribute: {name} = {value}"):
-            self.driver.execute_script(
-                f"arguments[0].setAttribute('{name}','{value}')",
-                self.present)
+            set_attr_js = f"arguments[0].setAttribute('{name}','{value}')"
+            self.driver.execute_script(set_attr_js, self.present)
         return self
 
     def input(self, value):
@@ -111,8 +105,8 @@ class Element:
 
     def input_by_js(self, value):
         with allure.step(f"Input {value} on {self.describe}"):
-            self.driver.executeScript(
-                f"arguments[0].value=\"{value}\"", self.visible)
+            input_js = f'arguments[0].value="{value}"'
+            self.driver.executeScript(input_js, self.visible)
         return self
 
     def click(self):
@@ -127,28 +121,27 @@ class Element:
 
     def hover(self):
         with allure.step(f"Hover Element {self.describe}"):
-            ActionChains(self.driver).move_to_element(self.visible).perform()
+            self.action.move_to_element(self.visible).perform()
         return self
 
     def double_click(self):
         with allure.step(f"Double click Element {self.describe}"):
-            ActionChains(self.driver).double_click(self.visible).perform()
+            self.action.double_click(self.visible).perform()
         return self
 
     def context_click(self):
         with allure.step(f"Right click Element {self.describe}"):
-            ActionChains(self.driver).context_click(self.visible).perform()
+            self.action.context_click(self.visible).perform()
         return self
 
     def hold_click(self):
         with allure.step(f"Hold click Element {self.describe}"):
-            ActionChains(self.driver).click_and_hold(self.visible).perform()
+            self.action.click_and_hold(self.visible).perform()
         return self
 
     def drag_and_drop(self, target: Element):
         with allure.step(f"Drag {self.describe} drop {target.describe}"):
-            ActionChains(self.driver).drag_and_drop(
-                self.visible, target).perform()
+            self.action.drag_and_drop(self.visible, target).perform()
         return target
 
     def enter(self):
@@ -169,22 +162,21 @@ class Element:
 
     def switch2frame(self):
         with allure.step(f"Switch to {self.describe}"):
-            self.conditions(
-                ec.frame_to_be_available_and_switch_to_it(self.locator))
+            frame = ec.frame_to_be_available_and_switch_to_it
+            self.locate(frame(self.locator))
         return self
 
 
 class Collection(Element):
-
     @property
     def present(self):
-        return self.conditions(
-            ec.presence_of_all_elements_located(self.locator))
+        all_presence = ec.presence_of_all_elements_located
+        return self.locate(all_presence(self.locator))
 
     @property
     def visible(self):
-        return self.conditions(
-            ec.visibility_of_all_elements_located(self.locator))
+        all_visibility = ec.visibility_of_all_elements_located
+        return self.locate(all_visibility(self.locator))
 
     @property
     def empty(self) -> bool:

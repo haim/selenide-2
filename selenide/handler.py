@@ -16,7 +16,7 @@ class MySQLHandler:
             database=self.config.get("database"),
             user=self.config.get("user"),
             password=self.config.get("password"),
-            charset='utf8',
+            charset="utf8",
             autocommit=True,
         )
 
@@ -36,7 +36,7 @@ class MySQLHandler:
         self.db.close()
 
 
-yaml.warnings({'YAMLLoadWarning': False})
+yaml.warnings({"YAMLLoadWarning": False})
 
 
 class YmlHandler:
@@ -52,6 +52,6 @@ class YmlHandler:
 
     @property
     def parameters(self):
-        with open(str(self.file), 'rb') as yf:
+        with open(str(self.file), "rb") as yf:
             self.yc = yaml.safe_load(yf)
         return dict(self.yc)
