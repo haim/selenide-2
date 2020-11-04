@@ -17,7 +17,7 @@ def readme() -> str:
 setup(
     name="selenide",
     packages=['selenide'],
-    version="0.0.6",
+    version="0.0.7",
     author="aquichita",
     author_email="chaochao.wu@outlook.com",
     description="Realization of UI automated testing wheels by selenium.",
