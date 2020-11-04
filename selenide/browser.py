@@ -4,10 +4,7 @@ from selenium.webdriver import DesiredCapabilities
 
 
 def browser(name="chrome", driver=None, grid_url=None, options=None):
-    if name not in (
-        "chrome",
-        "firefox",
-    ):
+    if name not in ("chrome", "firefox"):
         raise WebDriverException(f"Un support driver {name}")
     elif name == "firefox":
         if grid_url:

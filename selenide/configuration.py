@@ -1,10 +1,13 @@
-from selenium.webdriver.remote.webdriver import WebDriver
+from dataclasses import dataclass
+
+from selenium import webdriver
 
 
+@dataclass
 class Config:
-    driver: WebDriver
+    driver: webdriver
     mode: str
-    timeout: int = 6
+    timeout: int
     url: str
     width: int
     height: int

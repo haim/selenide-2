@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import time
-from typing import Optional, Union
+from typing import Union
 
 import allure
 from selenium.common.exceptions import (
@@ -14,19 +13,18 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
 from selenide.configuration import Config
-from selenide.helper import element_mark, to_by
+from selenide.helper import to_by, mark
 
 
 class Element:
-    def __init__(self, describe: Optional[str], locator: Union[str, tuple]):
+    def __init__(self, describe: str, locator: Union[str, tuple] = None):
         self.describe = describe
-        self.locator = to_by(locator)
-        self.action = ActionChains(self.driver)
+        self.locator = to_by(describe, locator)
 
     def __get__(self, instance, owner):
         if not instance:
             raise PermissionError("Element should be in page.")
-        self.driver = instance.driver
+        Config.driver = instance.driver
         return self
 
     def __set__(self, instance, value):
@@ -36,11 +34,13 @@ class Element:
         except WebDriverException:
             raise PermissionError("Element should be support input.")
 
+    @property
+    def driver(self):
+        return Config.driver
+
     def locate(self, condition):
         element = WebDriverWait(self.driver, Config.timeout).until(condition)
-        with element_mark(self.driver, element):
-            time.sleep(0.5)
-        return element
+        return mark(self.driver, element)
 
     @property
     def present(self):
@@ -60,6 +60,7 @@ class Element:
 
     @property
     def clickable(self):
+        print(self.locator)
         return self.locate(ec.element_to_be_clickable(self.locator))
 
     def has_text(self, text):
@@ -121,27 +122,32 @@ class Element:
 
     def hover(self):
         with allure.step(f"Hover Element {self.describe}"):
-            self.action.move_to_element(self.visible).perform()
+            action = ActionChains(self.driver)
+            action.move_to_element(self.visible).perform()
         return self
 
     def double_click(self):
         with allure.step(f"Double click Element {self.describe}"):
-            self.action.double_click(self.visible).perform()
+            action = ActionChains(self.driver)
+            action.double_click(self.visible).perform()
         return self
 
     def context_click(self):
         with allure.step(f"Right click Element {self.describe}"):
-            self.action.context_click(self.visible).perform()
+            action = ActionChains(self.driver)
+            action.context_click(self.visible).perform()
         return self
 
     def hold_click(self):
         with allure.step(f"Hold click Element {self.describe}"):
-            self.action.click_and_hold(self.visible).perform()
+            action = ActionChains(self.driver)
+            action.click_and_hold(self.visible).perform()
         return self
 
     def drag_and_drop(self, target: Element):
         with allure.step(f"Drag {self.describe} drop {target.describe}"):
-            self.action.drag_and_drop(self.visible, target).perform()
+            action = ActionChains(self.driver)
+            action.drag_and_drop(self.visible, target).perform()
         return target
 
     def enter(self):
