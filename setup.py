@@ -27,7 +27,7 @@ setup(
     url='https://github.com/aquichita/selenide',
     download_url='https://github.com/aquichita/selenide/tarball/'
                  + __version__,
-    license='BSD',
+    license='MIT',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
