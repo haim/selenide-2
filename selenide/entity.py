@@ -16,7 +16,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
-from selenide import configuration
+from selenide import configuration as conf
 
 _js_scroll_view = "arguments[0].scrollIntoViewIfNeeded(true)"
 _js_border_red = 'arguments[0].style.border="2px solid red"'
@@ -59,7 +59,7 @@ class Element:
     def __get__(self, instance, owner):
         if not instance:
             raise PermissionError("Element should be in page.")
-        configuration.DRIVER = instance.driver
+        conf.DRIVER = instance.driver
         return self
 
     def __set__(self, instance, value):
@@ -72,16 +72,14 @@ class Element:
 
     @property
     def driver(self):
-        return configuration.DRIVER
+        return conf.DRIVER
 
     def locate(self, condition):
         # 一般情况下为了元素上的操作而查找元素，默认通过指定状态显示等待条件
         # 如果仅需要判断元素状态 if Element("describe", "#username").present
-        element = WebDriverWait(self.driver, configuration.TIMEOUT).until(
-            condition
-        )
-        _mark(self.driver, element)
-        return element
+        we = WebDriverWait(self.driver, conf.TIMEOUT).until(condition)
+        _mark(self.driver, we)
+        return we
 
     @property
     def present(self):

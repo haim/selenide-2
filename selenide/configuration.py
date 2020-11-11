@@ -5,7 +5,7 @@ DRIVER: webdriver
 # enum: headless or usual
 MODE: str
 # large time judgment conditions
-TIMEOUT: int
+TIMEOUT: int = 6
 # base url
 URL: str
 # desktop size
