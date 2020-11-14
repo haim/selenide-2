@@ -1,9 +1,9 @@
 def by_text(text: str) -> str:
-    return f"//*[normalize-space(text())='{text}']"
+    return f"(//*[normalize-space(text())='{text}'])[last]"
 
 
 def with_text(text: str) -> str:
-    return f"//*[contains(text(),'{text}')]"
+    return f"(//*[contains(normalize-space(text()),'{text}')][last])"
 
 
 def by_attr(name: str, value: str) -> str:

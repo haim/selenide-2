@@ -28,9 +28,9 @@ _marker = ("/", "./", "..", "(")
 def _mark(driver: webdriver, element: Union[WebElement, bool]):
     if isinstance(element, WebElement):
         driver.execute_script(_js_scroll_view, element)
-        time.sleep(0.3)
+        time.sleep(1)
         driver.execute_script(_js_border_red, element)
-        time.sleep(0.2)
+        time.sleep(1)
         driver.execute_script(_js_border_nul, element)
 
 
@@ -168,31 +168,31 @@ class Element:
     def hover(self):
         with allure.step(f"Hover Element {self.describe}"):
             action = ActionChains(self.driver)
-            action.move_to_element(self.visible).perform()
+            action.move_to_element(self.present).perform()
         return self
 
     def double_click(self):
         with allure.step(f"Double click Element {self.describe}"):
             action = ActionChains(self.driver)
-            action.double_click(self.visible).perform()
+            action.double_click(self.present).perform()
         return self
 
     def context_click(self):
         with allure.step(f"Right click Element {self.describe}"):
             action = ActionChains(self.driver)
-            action.context_click(self.visible).perform()
+            action.context_click(self.present).perform()
         return self
 
     def hold_click(self):
         with allure.step(f"Hold click Element {self.describe}"):
             action = ActionChains(self.driver)
-            action.click_and_hold(self.visible).perform()
+            action.click_and_hold(self.present).perform()
         return self
 
     def drag_and_drop(self, target: Element):
         with allure.step(f"Drag {self.describe} drop {target.describe}"):
             action = ActionChains(self.driver)
-            action.drag_and_drop(self.visible, target).perform()
+            action.drag_and_drop(self.present, target).perform()
         return target
 
     def enter(self):
