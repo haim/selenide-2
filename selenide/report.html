@@ -1,0 +1,76 @@
+<html>
+<head>
+    <style>
+        .cases table {
+            width:1200;
+            margin:15px 0;
+            border:0;
+        }
+        .cases th {
+            background-color:#483D8B;
+            color:#FFFFFF
+        }
+        .cases,.cases th,.cases td {
+            font-size:0.95em;
+            text-align:center;
+            padding:4px;
+            border-collapse:collapse;
+        }
+        .cases th,.cases td {
+            border: 1px solid #2087fe;
+            border-width:1px 0 1px 0;
+            border:2px inset #ffffff;
+        }
+        .cases tr {
+            border: 1px solid #ffffff;
+        }
+        #summary p {
+            font-size:0.95em;
+        }
+        .environment table {
+            width:1200;
+            margin:15px 0;
+            border:0;
+        }
+        .environment th {
+            background-color:#483D8B;
+            color:#FFFFFF
+        }
+        .environment,.environment th,.environment td {
+            font-size:0.95em;
+            padding:4px;
+            border-collapse:collapse;
+        }
+        .environment th,.environment td {
+            border: 1px solid #2087fe;
+            border-width:1px 0 1px 0;
+            border:2px inset #ffffff;
+        }
+        .environment tr {
+            border: 1px solid #ffffff;
+        }
+        .environment tr td:first-child {
+            background-color:#483D8B;
+            color:#FFFFFF
+        }
+    </style>
+</head>
+<body>
+<h3>环境信息</h3>
+environment_html
+<h3>执行汇总</h3>
+<div id="summary">
+summary_html
+</div>
+<h3>执行详情</h3>
+<table class="cases">
+    <tr>
+        <th width="100px" align="center" valign="middle">史诗</th>
+        <th width="100px" align="center" valign="middle">特性</th>
+        <th width="100px" align="center" valign="middle">故事</th>
+        <th width="300px" align="center" valign="middle">用例</th>
+        <th width="100px" align="center" valign="middle">执行</th>
+    </tr>
+    case_result_html
+</table>
+</body>

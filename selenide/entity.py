@@ -4,7 +4,6 @@ import time
 from typing import Union, Tuple
 
 import allure
-from selenium import webdriver
 from selenium.common.exceptions import (
     InvalidElementStateException,
     WebDriverException,
@@ -12,26 +11,12 @@ from selenium.common.exceptions import (
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
 from selenide import configuration as conf
 
-_js_scroll_view = "arguments[0].scrollIntoViewIfNeeded(true)"
-_js_border_red = 'arguments[0].style.border="2px solid red"'
-_js_border_nul = 'arguments[0].style.border=""'
-
-_marker = ("/", "./", "..", "(")
-
-
-def _mark(driver: webdriver, element: Union[WebElement, bool]):
-    if isinstance(element, WebElement):
-        driver.execute_script(_js_scroll_view, element)
-        time.sleep(1)
-        driver.execute_script(_js_border_red, element)
-        time.sleep(1)
-        driver.execute_script(_js_border_nul, element)
+MARKER = ("/", "./", "..", "(")
 
 
 def by2locator(describe, location) -> Tuple:
@@ -39,7 +24,7 @@ def by2locator(describe, location) -> Tuple:
         return location
     elif isinstance(location, str):
         starts = location.startswith
-        if any((starts(maker) for maker in _marker)):
+        if any((starts(maker) for maker in MARKER)):
             return By.XPATH, location
         else:
             return By.CSS_SELECTOR, location
@@ -77,9 +62,17 @@ class Element:
     def locate(self, condition):
         # 一般情况下为了元素上的操作而查找元素，默认通过指定状态显示等待条件
         # 如果仅需要判断元素状态 if Element("describe", "#username").present
-        we = WebDriverWait(self.driver, conf.TIMEOUT).until(condition)
-        _mark(self.driver, we)
-        return we
+        element = WebDriverWait(self.driver, conf.TIMEOUT).until(condition)
+        self.driver.execute_script(
+            "arguments[0].scrollIntoViewIfNeeded(true)", element
+        )
+        time.sleep(0.5)
+        self.driver.execute_script(
+            'arguments[0].style.border="2px solid red"', element
+        )
+        time.sleep(0.5)
+        self.driver.execute_script('arguments[0].style.border=""', element)
+        return element
 
     @property
     def present(self):
